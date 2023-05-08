@@ -28,43 +28,48 @@
 
 /**
  * @file
- * @brief
- *  This file defines the OpenThread entropy source API.
+ *   This file includes compile-time configurations for the radio links.
+ *
  */
 
-#ifndef OPENTHREAD_ENTROPY_H_
-#define OPENTHREAD_ENTROPY_H_
+#ifndef CONFIG_RADIO_LINK_H_
+#define CONFIG_RADIO_LINK_H_
 
-#include <mbedtls/entropy.h>
-
-#ifdef __cplusplus
-extern "C" {
+/**
+ * @def OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+ *
+ * Set to 1 to enable support for IEEE802.15.4 radio link.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+#define OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE 1
 #endif
 
 /**
- * @addtogroup api-entropy
+ * @def OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
  *
- * @brief
- *   This module includes functions that manages entropy source.
- *
- * @{
+ * Set to 1 to enable support for Thread Radio Encapsulation Link (TREL).
  *
  */
-
-/**
- * This function returns initialized mbedtls_entropy_context.
- *
- * @returns  A pointer to initialized mbedtls_entropy_context.
- */
-mbedtls_entropy_context *otEntropyMbedTlsContextGet(void);
-
-/**
- * @}
- *
- */
-
-#ifdef __cplusplus
-} // extern "C"
+#ifndef OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+#define OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE 0
 #endif
 
-#endif // OPENTHREAD_ENTROPY_H_
+//--------------------------------------------------------------
+
+#if !OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE && !OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+#error "No radio link type is enabled - at least one radio link type should be enabled"
+#endif
+
+#ifdef OPENTHREAD_CONFIG_MULTI_RADIO
+#error "OPENTHREAD_CONFIG_MULTI_RADIO should not be defined directly." \
+       "It is derived from CONFIG_RADIO_LINK_<TYPE>_ENABLE options."
+#endif
+
+#if (OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE && OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE)
+#define OPENTHREAD_CONFIG_MULTI_RADIO 1
+#else
+#define OPENTHREAD_CONFIG_MULTI_RADIO 0
+#endif
+
+#endif // CONFIG_RADIO_LINK_H_

@@ -1,4 +1,4 @@
-/* Copyright [2009 - 2019] Exegin Technologies Limited. All rights reserved. */
+/* Copyright [2009 - 2021] Exegin Technologies Limited. All rights reserved. */
 
 #include "zigbee.h"
 
@@ -39,9 +39,9 @@ char_is_space(uint8_t c)
         default:
             rc = false;
             break;
-    } /* switch */
+    }
     return (rc);
-} /* char_is_space */
+}
 
 /*FUNCTION:------------------------------------------------------
  *  NAME
@@ -67,7 +67,7 @@ zb_hex_str_to_bin(const char *string, void *out, unsigned int maxlen)
     const uint8_t *str = (const uint8_t *)string;
     char c;
 
-    if (!str) {
+    if (str == NULL) {
         return 0;
     }
 
@@ -130,7 +130,7 @@ zb_hex_str_to_bin(const char *string, void *out, unsigned int maxlen)
 
     /* Done */
     return (int)i;
-} /* zb_hex_str_to_bin */
+}
 
 /*FUNCTION:------------------------------------------------------
  *  NAME
@@ -158,7 +158,6 @@ zb_hex_bin_to_str(const uint8_t *in_data, unsigned int in_len, char *out_str, un
     unsigned int i, j;
     const char *hex = "0123456789abcdef";
 
-    /* FIXME */
     if (max_len == 0U) {
         return 0;
     }
@@ -177,7 +176,7 @@ zb_hex_bin_to_str(const uint8_t *in_data, unsigned int in_len, char *out_str, un
         }
         out_str[j++] = hex[(in_data[i] >> 4) & 0x0fU];
         out_str[j++] = hex[in_data[i] & 0x0fU];
-    } /* for */
+    }
     out_str[j] = (char)0;
     return j;
-} /* zb_hex_bin_to_str */
+}

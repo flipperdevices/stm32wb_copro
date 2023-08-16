@@ -227,6 +227,7 @@ extern "C" {
     SHCI_OCF_C2_CONCURRENT_GET_NEXT_BLE_EVT_TIME,
     SHCI_OCF_C2_CONCURRENT_ENABLE_NEXT_802154_EVT_NOTIFICATION,
     SHCI_OCF_C2_802_15_4_DEINIT,
+    SHCI_OCF_C2_SET_SYSTEM_CLOCK,
   } SHCI_OCF_t;
 
 #define SHCI_OPCODE_C2_FUS_GET_STATE         (( SHCI_OGF << 10) + SHCI_OCF_C2_FUS_GET_STATE)
@@ -598,7 +599,7 @@ extern "C" {
   int16_t rx_path_compens;
 
   /* BLE core specification version (8-bit unsigned integer).
-   * values as: 11(5.2), 12(5.3)
+   * values as: 11(5.2), 12(5.3), 13(5.4)
    */
   uint8_t ble_core_version; 
  
@@ -829,6 +830,7 @@ extern "C" {
     /** No response parameters*/
 
 #define SHCI_OPCODE_C2_CONFIG   (( SHCI_OGF << 10) + SHCI_OCF_C2_CONFIG)
+
   /** Command parameters */
     typedef PACKED_STRUCT{
       uint8_t PayloadCmdSize;
@@ -842,6 +844,15 @@ extern "C" {
     } SHCI_C2_CONFIG_Cmd_Param_t;
 
 #define SHCI_OPCODE_C2_802_15_4_DEINIT    (( SHCI_OGF << 10) + SHCI_OCF_C2_802_15_4_DEINIT)
+    
+#define SHCI_OPCODE_C2_SET_SYSTEM_CLOCK   (( SHCI_OGF << 10) + SHCI_OCF_C2_SET_SYSTEM_CLOCK)
+  /** Command parameters */
+    typedef enum
+    {
+      SET_SYSTEM_CLOCK_HSE_TO_PLL,
+      SET_SYSTEM_CLOCK_PLL_ON_TO_HSE,
+      SET_SYSTEM_CLOCK_PLL_OFF_TO_HSE,
+    }SHCI_C2_SET_SYSTEM_CLOCK_Cmd_Param_t;
 
 /**
  * PayloadCmdSize
@@ -855,13 +866,13 @@ extern "C" {
 #define SHCI_C2_CONFIG_CUT2_0                        (0x2000)
 #define SHCI_C2_CONFIG_CUT2_1                        (0x2001)
 #define SHCI_C2_CONFIG_CUT2_2                        (0x2003)
- 
+
 /**
  * Device ID
  */
-#define SHCI_C2_CONFIG_STM32WB55xx                   (0x495)    
-#define SHCI_C2_CONFIG_STM32WB15xx                   (0x494)
-    
+#define SHCI_C2_CONFIG_STM32WB55xx                    (0x495)
+#define SHCI_C2_CONFIG_STM32WB15xx                    (0x494)
+
 /**
  * Config1
  * Each definition below may be added together to build the Config1 value
@@ -878,7 +889,7 @@ extern "C" {
  */
 #define SHCI_C2_CONFIG_EVTMASK1_BIT0_ERROR_NOTIF_ENABLE               (1<<0)
 #define SHCI_C2_CONFIG_EVTMASK1_BIT1_BLE_NVM_RAM_UPDATE_ENABLE        (1<<1)
-#define SHCI_C2_CONFIG_EVTMASK1_BIT2_THREAD_NVM_RAM_UPDATE_ENABLE         (1<<2)
+#define SHCI_C2_CONFIG_EVTMASK1_BIT2_THREAD_NVM_RAM_UPDATE_ENABLE     (1<<2)
 #define SHCI_C2_CONFIG_EVTMASK1_BIT3_NVM_START_WRITE_ENABLE           (1<<3)
 #define SHCI_C2_CONFIG_EVTMASK1_BIT4_NVM_END_WRITE_ENABLE             (1<<4)
 #define SHCI_C2_CONFIG_EVTMASK1_BIT5_NVM_START_ERASE_ENABLE           (1<<5)
@@ -1363,10 +1374,25 @@ typedef struct {
    * @retval Status
    */
   SHCI_CmdStatus_t SHCI_C2_802_15_4_DeInit( void );
+  
+  /**
+  * SHCI_C2_SetSystemClock
+  * @brief Request CPU2 to change system clock
+  *
+  * @param clockSel: It can be one of the following list
+  *                -  SET_SYSTEM_CLOCK_HSE_TO_PLL : CPU2 set system clock to PLL, PLL must be configured and started before.
+  *                -  SET_SYSTEM_CLOCK_PLL_ON_TO_HSE : CPU2 set System clock to HSE, PLL is still ON after command exection. 
+  *                -  SET_SYSTEM_CLOCK_PLL_OFF_TO_HSE : CPU2 set System clock to HSE, PLL is turned OFF after command exection. 
+  *
+  * @retval Status
+  */
+  SHCI_CmdStatus_t SHCI_C2_SetSystemClock( SHCI_C2_SET_SYSTEM_CLOCK_Cmd_Param_t clockSel );
 
-  #ifdef __cplusplus
+
+#ifdef __cplusplus
 }
 #endif
 
 #endif /*__SHCI_H */
 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
